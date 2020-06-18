@@ -83,7 +83,7 @@ float duration_of(int beat_unit, int bpm, map<string, int> types, string type) {
 
   int bps = bpm/60;
 
-return ((float)(beat_unit)/(float)(types[type])) * ((float)(1)/(float)(bps));
+  return ((float)(beat_unit)/(float)(types[type])) * ((float)(1)/(float)(bps));
 
 }
 
