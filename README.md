@@ -10,11 +10,11 @@ This program uses concepts found in math, physics, and music, in tandem with the
 ## Concepts
 ### Music
 Music is constructed by melody and rhythm. A melody is simply a sequence of notes. Rhythm, on the other hand, determines the length of notes, the pace of the melody as a whole, as well as the time signature of the score. As a matter of fact, this program will use these as inputs:
-    - beats per bar
-    - beat unit
-    - beats per minute (bpm)
-    - note
-    - note length (type)
+- beats per bar
+- beat unit
+- beats per minute (bpm)
+- note
+- note length (type)
 
 ### Math and Physics
 With our structure and inputs in place, we can now move on to the phase of processing them in a way that the SFML API can interpret it, and have your machine produce the specified sounds. But first, I need to explain a few more things:
