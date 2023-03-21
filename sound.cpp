@@ -30,19 +30,19 @@ void play_sequence(Sequence, unsigned, unsigned, unsigned, int);
 
 int main(int argc, char** argv) {
 
-  //Create the note-to-frequency dictionary
+  // Create the note-to-frequency dictionary
   map<string, float> frequencies;
   string setnotes[12];
   stringstream sstm;
-  int half_step = -57;
+  int half_step = -57;    // amount of half-steps that C0 is from A4
   dict_freq(frequencies, setnotes, 12, sstm, half_step);
 
-  //Create the type-to-number dictionary
+  // Create the type-to-number dictionary
   map<string, int> types;
   string settypes[7];
   dict_types(types, settypes, 7);
 
-  //Commence input parsing
+  // Commence input parsing
   const unsigned SAMPLES = 44100;
   const unsigned SAMPLE_RATE = 44100;
   const unsigned AMPLITUDE = 30000;
@@ -52,11 +52,11 @@ int main(int argc, char** argv) {
   s.beat_unit = atoi(argv[2]);
   s.bpm = atoi(argv[3]);
 
-  int size = (argc - 4)/2;		//amount of notes in the sequence.
+  int size = (argc - 4)/2;    // amount of notes in the sequence.
   s.notes = new Note[size];
   int counter = 0;
 
-  //Finish populating the sequence and the notes
+  // Finish populating the sequence and the notes
   for(int c = 4; c < argc; c+=2) {
     s.notes[counter].name = argv[c];
     s.notes[counter].frequency = frequencies[s.notes[counter].name];
@@ -71,14 +71,14 @@ int main(int argc, char** argv) {
 
 }
 
-//Return the frequency for the amount of half_steps away from A4(440Hz).
+// Return the frequency for the amount of half_steps away from A4(440Hz).
 double freq(int half_step) {
 
   return 440.0 * pow(pow(2.0, 1.0/12.0), half_step);
 
 }
 
-//Return the duration of a note given its type.
+// Return the duration of a note given its type.
 float duration_of(int beat_unit, int bpm, map<string, int> types, string type) {
 
   int bps = bpm/60;
@@ -87,7 +87,7 @@ float duration_of(int beat_unit, int bpm, map<string, int> types, string type) {
 
 }
 
-//Creates the frequencies dictionary.
+// Creates the frequencies dictionary.
 void dict_freq(map<string, float> &frequencies, string setnotes[], int size, stringstream &sstm, int half_step) {
 
   setnotes[0] = "c";
@@ -114,7 +114,7 @@ void dict_freq(map<string, float> &frequencies, string setnotes[], int size, str
 
 }
 
-//Creates the types dictionary.
+// Creates the types dictionary.
 void dict_types(map<string, int> &types, string settypes[], int size) {
 
   settypes[0] = "whole";
@@ -131,7 +131,7 @@ void dict_types(map<string, int> &types, string settypes[], int size) {
 
 }
 
-//Plays the sound with the given sample rate, amplitude, and note.
+// Plays the sound with the given sample rate, amplitude, and note.
 void play_sound(unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note note) {
 
   Int16 NOTE[SAMPLES];
@@ -155,7 +155,7 @@ void play_sound(unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note
 
 }
 
-//Plays the sequence by iterating through each note and feeding it to play_sound.
+// Plays the sequence by iterating through each note and feeding it to play_sound.
 void play_sequence(Sequence s, unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, int size) {
 
   for(int c = 0; c < size; c++) {
