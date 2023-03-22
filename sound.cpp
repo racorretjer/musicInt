@@ -81,9 +81,7 @@ double freq(int half_step) {
 // Return the duration of a note given its type.
 float duration_of(int beat_unit, int bpm, map<string, int> types, string type) {
 
-  int bps = bpm/60;
-
-  return ((float)(beat_unit)/(float)(types[type])) * ((float)(1)/(float)(bps));
+  return ((float)60000/(float)bpm) * ((float)beat_unit/(float)types[type]);
 
 }
 
@@ -150,7 +148,7 @@ void play_sound(unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note
   sound.setLoop(true);
 
   sound.play();
-  sleep(seconds(note.duration));
+  sleep(milliseconds(note.duration));
   sound.stop();
 
 }
