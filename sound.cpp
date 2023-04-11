@@ -12,6 +12,7 @@ struct Note {
   double frequency;
   string type;
   float duration;
+  unsigned samples;
 };
 
 struct Sequence {
@@ -25,8 +26,8 @@ double freq(int);
 float duration_of(int, int, map<string, int>, string);
 void dict_freq(map<string, float> &, string [], int, stringstream &, int);
 void dict_types(map<string, int> &, string [], int);
-void play_sound(unsigned, unsigned, unsigned, Note);
-void play_sequence(Sequence, unsigned, unsigned, unsigned, int);
+void play_sound(unsigned, unsigned, Note);
+void play_sequence(Sequence, unsigned, unsigned, int);
 
 int main(int argc, char** argv) {
 
@@ -34,7 +35,7 @@ int main(int argc, char** argv) {
   map<string, float> frequencies;
   string setnotes[12];
   stringstream sstm;
-  int half_step = -57;    // amount of half-steps that C0 is from A4
+  int half_step = -57; // amount of half-steps that C0 is from A4
   dict_freq(frequencies, setnotes, 12, sstm, half_step);
 
   // Create the type-to-number dictionary
@@ -43,7 +44,6 @@ int main(int argc, char** argv) {
   dict_types(types, settypes, 7);
 
   // Commence input parsing
-  const unsigned SAMPLES = 44100;
   const unsigned SAMPLE_RATE = 44100;
   const unsigned AMPLITUDE = 30000;
 
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
   s.beat_unit = atoi(argv[2]);
   s.bpm = atoi(argv[3]);
 
-  int size = (argc - 4)/2;    // amount of notes in the sequence.
+  int size = (argc - 4)/2; // amount of notes in the sequence.
   s.notes = new Note[size];
   int counter = 0;
 
@@ -62,10 +62,12 @@ int main(int argc, char** argv) {
     s.notes[counter].frequency = frequencies[s.notes[counter].name];
     s.notes[counter].type = argv[c+1];
     s.notes[counter].duration = duration_of(s.beat_unit, s.bpm, types, s.notes[counter].type);
+    // number of samples depends on the duration of the note
+    s.notes[counter].samples = s.notes[counter].duration / 1000 * SAMPLE_RATE;
     counter++;
   }
 
-  play_sequence(s, SAMPLES, SAMPLE_RATE, AMPLITUDE, size);
+  play_sequence(s, SAMPLE_RATE, AMPLITUDE, size);
 
   return 0;
 
@@ -130,19 +132,19 @@ void dict_types(map<string, int> &types, string settypes[], int size) {
 }
 
 // Plays the sound with the given sample rate, amplitude, and note.
-void play_sound(unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note note) {
+void play_sound(unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note note) {
 
-  Int16 NOTE[SAMPLES];
-  const double increment = note.frequency/SAMPLES;
+  Int16 raw[note.samples];
+  const double increment = note.frequency/SAMPLE_RATE;
   double x = 0;
 
-  for(unsigned i = 0; i < SAMPLES; i++) {
-    NOTE[i] = AMPLITUDE * sin(2 * M_PI * x);
+  for(unsigned i = 0; i < note.samples; i++) {
+    raw[i] = AMPLITUDE * sin(2 * M_PI * x);
     x += increment;
   }
 
   SoundBuffer Buffer;
-  Buffer.loadFromSamples(NOTE, SAMPLES, 1, SAMPLE_RATE);
+  Buffer.loadFromSamples(raw, note.samples, 1, SAMPLE_RATE);
   Sound sound;
   sound.setBuffer(Buffer);
   sound.setLoop(true);
@@ -154,10 +156,10 @@ void play_sound(unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, Note
 }
 
 // Plays the sequence by iterating through each note and feeding it to play_sound.
-void play_sequence(Sequence s, unsigned SAMPLES, unsigned SAMPLE_RATE, unsigned AMPLITUDE, int size) {
+void play_sequence(Sequence s, unsigned SAMPLE_RATE, unsigned AMPLITUDE, int size) {
 
   for(int c = 0; c < size; c++) {
-    play_sound(SAMPLES, SAMPLE_RATE, AMPLITUDE, s.notes[c]);
+    play_sound(SAMPLE_RATE, AMPLITUDE, s.notes[c]);
   }
 
 }
